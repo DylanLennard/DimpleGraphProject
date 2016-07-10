@@ -11,41 +11,36 @@
         fill: navy;
     }
     h1 {
-        text-align: center;
+        width: 1200px;
     }
     h2 {
-        text-align: center;
+        width: 1200 px;
+    }
+    p {
+        width: 1200px;
     }
 
     </style>
-    <h1>
-        Debt Consolidation Loans Granted by Prosper Loans
-    </h1>
-    <p1>
-        Prosper Loans is a peer-to-peer lending company that grants loans to people looking to avoid banks as the source of their loan. Though loans may be requested for various reasons, the most commonly cited reason for loans granted by Prosper has been debt consolidation. I wanted to look briefly at the average loan amount granted to people in a particular income bracket by Prosper Loans.
-    </p1>
-
+</head>
+<body>
     <script type="text/javascript">
         function draw_first(data) {
 
             "use strict";//give error if javascript could silently fail
             var margin = 75,
-                width = 1400 - margin,
+                width = 1100 - margin,
                 height = 600 - margin;
 
             debugger;
 
-            d3.select('body')
-                .append('h2')
-                .text("Average Debt Consolidation Loan by Income Bracket Granted by Prosper Loans");
-
             //played with resizing, feel it's better to hardcode size of window in first place.
-            var svg = d3.select("body")
-                .append("svg")
-                    .attr("width", width + margin)
-                    .attr("height", height + margin)
-                .append('g')
-                    .attr('class','chart');
+
+            var svg = dimple.newSvg("#income-by-bracket")
+                        .attr("width", width + margin)
+                        .attr("height", height + margin)
+                        .append('g')
+                        .attr('class','chart');
+
 
             /* d3.js Chart construction code*/
 
@@ -85,21 +80,16 @@
 
         function draw_second(data){
             var margin = 75,
-                width = 1400 - margin,
+                width = 1100 - margin,
                 height = 600 - margin;
 
             debugger;
 
-            d3.select('body')
-                .append('h2')
-                .text("Bruh");
-
-            var svg = d3.select("body")
-                .append("svg")
-                    .attr("width", width + margin)
-                    .attr("height", height + margin)
-                .append('g')
-                    .attr('class','chart');
+            var svg = dimple.newSvg("#number-of-loans")
+                        .attr("width", width + margin)
+                        .attr("height", height + margin)
+                        .append('g')
+                        .attr('class','chart');
 
             var myChart = new dimple.chart(svg, data);
             var x = myChart.addCategoryAxis("x", "YearlyIncomeRounded");
@@ -116,34 +106,44 @@
             y.fontSize = 12;
 
             var s2 = myChart.addSeries(null, dimple.plot.bar);
-            //from: http://stackoverflow.com/questions/25774821/dimple-js-axis-labels
-            //x.categoryFields = ['Yearly Income Bracket'];
-            //y.categoryFields = ['Dollar Amount of Loan'];
 
             myChart.draw();
+            x.categoryFields = ['Yearly Income Bracket'];
+            //y.categoryFields = ['Number of Loans'];
 
             svg.select("g.dimple-axis").selectAll("g.tick")[0][16].remove()
         }
-
-
-    </script>
-</head>
-<body>
-    <script type="text/javascript">
-    /*
-    Use D3 (not dimple.js) to load the CSV file
-    and pass the contents of it to the draw function
-    */
-    d3.csv("MeanLoanAmountProsperLoanData.csv", draw_first);
-    d3.csv("MeanLoanAmountProsperLoanData.csv", draw_second);
-
-    //hack this to get next paragraph in.
-    d3.select("p")
-       .append("s1")
-       .html("According to data provided by the Bureau of Transportation Statistics, Security Delays accounted for approximately \
-         0.35% of total delay time in 2015. While data for May 2016 was not yet available at the time of coding, this trend \
-         continued through April of 2016. In fact, despite ")
+        d3.csv("MeanLoanAmountProsperLoanData.csv", draw_first);
+        d3.csv("MeanLoanAmountProsperLoanData.csv", draw_second);
 
     </script>
+    <h1>
+        Debt Consolidation Loans Granted by Prosper Loans
+    </h1>
+    <p>
+        Prosper Loans is a peer-to-peer lending company that grants loans to people looking to avoid banks as the source of their loan. Though loans may be requested for various reasons, the most commonly cited reason for loans granted by Prosper has been debt consolidation. I wanted to look briefly at the average loan amount granted to people in a particular income bracket by Prosper Loans.
+    </p>
+    <p>
+        Second Paragraph
+    </p>
+    <h2>
+        Average Debt Consolidation Loan by Income Bracket Granted by Prosper Loans
+    </h2>
+      <div id="income-by-bracket"></div>
+      <!--https://gist.github.com/yanndupis/1aa836f735732a0b119502adaed47684/-->
+    <p>
+        Thid Paragraph
+    </p>
+
+    <h2>
+        Number of Loans by Income Bracket
+    </h2>
+
+    <div id="number-of-loans"></div>
+
+    <p>
+        Conclusion
+    </p>
+
 </body>
 </html>
