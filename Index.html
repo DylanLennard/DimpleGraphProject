@@ -4,21 +4,30 @@
     <meta charset="utf-8">
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
-    <style>
+
+    <style type="text/css">
 
     rect {
         fill: navy;
     }
-
+    h1 {
+        text-align: center;
+    }
     h2 {
         text-align: center;
     }
+
     </style>
+    <h1>
+        Debt Consolidation Loans Granted by Prosper Loans
+    </h1>
+    <p1>
+        Prosper Loans is a peer-to-peer lending company that grants loans to people looking to avoid banks as the source of their loan. Though loans may be requested for various reasons, the most commonly cited reason for loans granted by Prosper has been debt consolidation. I wanted to look briefly at the average loan amount granted to people in a particular income bracket by Prosper Loans.
+    </p1>
+
     <script type="text/javascript">
-        function draw(data) {
-            /*
-            D3.js setup code
-            */
+        function draw_first(data) {
+
             "use strict";//give error if javascript could silently fail
             var margin = 75,
                 width = 1400 - margin,
@@ -30,9 +39,7 @@
                 .append('h2')
                 .text("Average Debt Consolidation Loan by Income Bracket Granted by Prosper Loans");
 
-            /*below sets up the size and such of our chart and assigns it
-            to an svg element*/
-
+            //played with resizing, feel it's better to hardcode size of window in first place.
             var svg = d3.select("body")
                 .append("svg")
                     .attr("width", width + margin)
@@ -45,23 +52,80 @@
             var myChart = new dimple.chart(svg, data);
             var x = myChart.addCategoryAxis("x", "YearlyIncomeRounded");
             var y = myChart.addMeasureAxis("y", "mean_original_loan");
+            //var y = myChart.addMeasureAxis("y", yComponent);
 
             x.addOrderRule("YearlyIncomeRounded", false);
-
+            x.tickFormat = '$,';
             x.title = "Yearly Income Rounded to Lowest $10,000";
-            x.tickFormat = ',';
-            y.title = 'Mean Loan Amount ($)';
-            y.tickFormat = ',.f';
 
-            x.fontSize = 16;
-            y.fontSize = 16;
+            y.title = 'Mean Loan Amount';
+            y.tickFormat = '$,.f';
 
-            var s3 = myChart.addSeries(null, dimple.plot.bar);
+            x.fontSize = 12;
+            y.fontSize = 12;
+
+            var s1 = myChart.addSeries(null, dimple.plot.bar);
 
             /* Draw the graph*/
             myChart.draw();
+            /*window.onresize = function () {
+                myChart.draw(0, true);
+            };*/
 
+            //from: http://stackoverflow.com/questions/25774821/dimple-js-axis-labels
+            x.categoryFields = ['Yearly Income Bracket'];
+            //y.categoryFields = ['Dollar Amount of Loan'];
+
+            //work around to get rid of ticker issue on first chart
+            svg.select("g.dimple-axis").selectAll("g.tick")[0][16].remove()
+
+            //blocks:
+            //http://blockbuilder.org/anonymous/d99ae2b5665dcd610572d1a21dbf0679
         };
+
+        function draw_second(data){
+            var margin = 75,
+                width = 1400 - margin,
+                height = 600 - margin;
+
+            debugger;
+
+            d3.select('body')
+                .append('h2')
+                .text("Bruh");
+
+            var svg = d3.select("body")
+                .append("svg")
+                    .attr("width", width + margin)
+                    .attr("height", height + margin)
+                .append('g')
+                    .attr('class','chart');
+
+            var myChart = new dimple.chart(svg, data);
+            var x = myChart.addCategoryAxis("x", "YearlyIncomeRounded");
+            var y = myChart.addMeasureAxis("y", "number_of_loans");
+
+            x.addOrderRule("YearlyIncomeRounded", false);
+            x.tickFormat = '$,';
+            x.title = "Yearly Income Rounded to Lowest $10,000";
+
+            y.tickFormat = ',.f';
+            y.title = 'Number of Loans Granted';
+
+            x.fontSize = 12;
+            y.fontSize = 12;
+
+            var s2 = myChart.addSeries(null, dimple.plot.bar);
+            //from: http://stackoverflow.com/questions/25774821/dimple-js-axis-labels
+            //x.categoryFields = ['Yearly Income Bracket'];
+            //y.categoryFields = ['Dollar Amount of Loan'];
+
+            myChart.draw();
+
+            svg.select("g.dimple-axis").selectAll("g.tick")[0][16].remove()
+        }
+
+
     </script>
 </head>
 <body>
@@ -70,7 +134,16 @@
     Use D3 (not dimple.js) to load the CSV file
     and pass the contents of it to the draw function
     */
-    d3.csv("MeanLoanAmountProsperLoanData.csv", draw);
+    d3.csv("MeanLoanAmountProsperLoanData.csv", draw_first);
+    d3.csv("MeanLoanAmountProsperLoanData.csv", draw_second);
+
+    //hack this to get next paragraph in.
+    d3.select("p")
+       .append("s1")
+       .html("According to data provided by the Bureau of Transportation Statistics, Security Delays accounted for approximately \
+         0.35% of total delay time in 2015. While data for May 2016 was not yet available at the time of coding, this trend \
+         continued through April of 2016. In fact, despite ")
+
     </script>
 </body>
 </html>
