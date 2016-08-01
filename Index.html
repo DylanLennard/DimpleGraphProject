@@ -8,15 +8,9 @@
     <style type="text/css">
 
     rect {
-        fill: navy;
+        fill: #659EC7;
     }
-    h1 {
-        width: 1200px;
-    }
-    h2 {
-        width: 1200 px;
-    }
-    p {
+    h1, h3, p {
         width: 1200px;
     }
 
@@ -24,7 +18,7 @@
 </head>
 <body>
     <script type="text/javascript">
-        function draw_first(data) {
+        function draw_average_loan(data) {
             //graph for average loan amount by income bracket
 
             "use strict";//give error if javascript could silently fail
@@ -34,7 +28,6 @@
 
             debugger;
 
-            //played with resizing, feel it's better to hardcode size of window in first place.
 
             var svg = dimple.newSvg("#income-by-bracket")
                         .attr("width", width + margin)
@@ -47,7 +40,7 @@
 
             var myChart = new dimple.chart(svg, data);
             var x = myChart.addCategoryAxis("x", "YearlyIncomeRounded");
-            var y = myChart.addMeasureAxis("y", "mean_original_loan");
+            var y = myChart.addMeasureAxis("y", "MeanOriginalLoanAmount");
 
             x.addOrderRule("YearlyIncomeRounded", false);
             x.tickFormat = '$,';
@@ -67,9 +60,6 @@
                 myChart.draw(0, true);
             };*/
 
-            //from: http://stackoverflow.com/questions/25774821/dimple-js-axis-labels
-            x.categoryFields = ['Yearly Income Bracket'];
-            //y.categoryFields = ['Dollar Amount of Loan'];
 
             //work around to get rid of ticker issue on first chart
             svg.select("g.dimple-axis").selectAll("g.tick")[0][16].remove()
@@ -89,9 +79,9 @@
 
         };
 
-        function draw_second(data){
-
+        function draw_number_loans(data){
             // The Number of Loans Graph
+
             var margin = 75,
                 width = 1100 - margin,
                 height = 600 - margin;
@@ -107,13 +97,13 @@
 
             var myChart = new dimple.chart(svg, data);
             var x = myChart.addCategoryAxis("x", "YearlyIncomeRounded");
-            var y = myChart.addMeasureAxis("y", "number_of_loans");
+            var y = myChart.addMeasureAxis("y", "NumberofLoans");
 
             x.addOrderRule("YearlyIncomeRounded", false);
             x.tickFormat = '$,';
             x.title = "Yearly Income Rounded to Lowest $10,000";
 
-            y.tickFormat = ',.f';
+            //y.tickFormat = ',.f';
             y.title = 'Number of Loans Granted';
 
             x.fontSize = 12;
@@ -122,8 +112,6 @@
             var s2 = myChart.addSeries(null, dimple.plot.bar);
 
             myChart.draw();
-            x.categoryFields = ['Yearly Income Bracket'];
-            //y.categoryFields = ['Number of Loans'];
 
             svg.select("g.dimple-axis").selectAll("g.tick")[0][16].remove()
             svg.append("text")
@@ -133,82 +121,87 @@
                 .style("font-family", "sans-serif")
                 .style("font-weight", "bold")
                 .text("Number of Loans by Income Bracket")
-
         }
-        function draw_third(data){
-            //graph for loan as percentage of income
+        function draw_total_loan_amounts(data) {
+            //graph for total amount in loans granted to a particular income bracket
 
+            "use strict";//give error if javascript could silently fail
             var margin = 75,
                 width = 1100 - margin,
                 height = 600 - margin;
 
             debugger;
 
-            var svg = dimple.newSvg("#percentage")
+            //played with resizing, feel it's better to hardcode size of window in first place.
+
+            var svg = dimple.newSvg("#total-loan-amount")
                         .attr("width", width + margin)
                         .attr("height", height + margin)
                         .append('g')
                         .attr('class','chart');
 
-            //To exclude the "$0" row
-            var data_new = data.slice(1,16);
 
-            var myChart = new dimple.chart(svg, data_new);
+            /* d3.js Chart construction code*/
+
+            var myChart = new dimple.chart(svg, data);
             var x = myChart.addCategoryAxis("x", "YearlyIncomeRounded");
-            var y = myChart.addMeasureAxis("y", "mean_percentage_of_income");
+            var y = myChart.addMeasureAxis("y", "totalLoanAmounts");
 
             x.addOrderRule("YearlyIncomeRounded", false);
             x.tickFormat = '$,';
             x.title = "Yearly Income Rounded to Lowest $10,000";
 
-            y.tickFormat = ',.2f';
-            y.title = 'Percentage of Income';
+            y.title = 'Mean Loan Amount';
+            y.tickFormat = '$,.f';
 
             x.fontSize = 12;
             y.fontSize = 12;
 
-            var s3 = myChart.addSeries(null, dimple.plot.bar);
+            var s1 = myChart.addSeries(null, dimple.plot.bar);
 
+            /* Draw the graph*/
             myChart.draw();
-            x.categoryFields = ['Yearly Income Bracket'];
-            //y.categoryFields = ['Number of Loans'];
 
-            svg.select("g.dimple-axis").selectAll("g.tick")[0][15].remove()
+            //work around to get rid of ticker issue on first chart
+            svg.select("g.dimple-axis").selectAll("g.tick")[0][16].remove()
+
+            //blocks:
+            //http://blockbuilder.org/anonymous/d99ae2b5665dcd610572d1a21dbf0679
+
+            //got the title formating from Yahn at the following:
+            //https://gist.github.com/yanndupis/1aa836f735732a0b119502adaed47684
             svg.append("text")
                 .attr("x", myChart._xPixels() + myChart._widthPixels() / 2)
                 .attr("y", myChart._yPixels() - 25)
                 .style("text-anchor", "middle")
                 .style("font-family", "sans-serif")
                 .style("font-weight", "bold")
-                .text("Average Percentage of Income for Loan by Income Bracket")
-        }
-        d3.csv("MeanLoanAmountProsperLoanData.csv", draw_first);
-        d3.csv("MeanLoanAmountProsperLoanData.csv", draw_second);
-        d3.csv("MeanLoanAmountProsperLoanData.csv", draw_third);
+                .text("Total Value of Loans Given by Income Bracket")
+
+        };
+
+        //actual calls to functions
+        d3.csv("MeanLoanAmountProsperLoanData.csv", draw_average_loan);
+        d3.csv("MeanLoanAmountProsperLoanData.csv", draw_number_loans);
+        d3.csv("MeanLoanAmountProsperLoanData.csv", draw_total_loan_amounts);
 
     </script>
     <h1>
         Debt Consolidation Loans Granted by Prosper Loans
     </h1>
     <p>
-        Prosper Loans is a peer-to-peer lending company that grants loans to people looking to avoid banks as the source of their loan. Though loans may be requested for various reasons, the most commonly cited reason for loans granted by Prosper has been debt consolidation. I wanted to investigate the demographics of those seeking prosper loans for debt consolidation. In particular I was interested in variation by income and I wanted to answer the following: how much money do people using prosper loans request based relative to their income income, and how many people are utilizing prosper loans at various income levels?
+        Prosper Loans is a peer-to-peer lending company that grants loans to people looking to avoid banks as the source of their loan. Though loans may be requested for various reasons, the most commonly cited reason for loans granted by Prosper has been debt consolidation. I wanted to investigate the demographics of those seeking prosper loans for debt consolidation. In particular I was interested in variation by income and I wanted to answer the following: how much are people requesting for loans on average, how many loans are being granted, and which income bracket is receiving the most in terms of debt consolidation loans?
+
     </p>
     <h3>
         Average Loan Amount by Income
     </h3>
     <p>
-        First I looked at the mean loan amounts by income brackets. The motivation was to see the average amount requested for debt consolidation as income increases. I felt that grouping income by $10,000's would allow us to avoid unhelpful variance without losing too much information by using larger bins.
-        As we expect, with the exception of a slightly higher mean amount for people with less than $10,000 of income, people with higher incomes borrow more money for debt consolidation on average than those with lower income.
+        First I looked at the mean loan amounts by income brackets. The motivation was to see the average amount requested for debt consolidation as income increases. I felt that grouping income by $10,000s would allow us to avoid unhelpful variance without losing too much information by using larger bins.
+        As we expect, with the exception of a slightly higher mean amount for people with less than $10,000 of income, people with higher incomes borrow more money for debt consolidation on average than those with lower income. Also notice that the graph is close to logarithmic in nature, thus the mean loan by bracket increases less as you go higher in the income range.
     </p>
 
     <div id="income-by-bracket"></div>
-    <h3>
-        Average Percentage of Income
-    </h3>
-    <p>
-        It seems that people with higher incomes need higher amounts for debt consolidation. However, on average the actual percentage of income taken out for a loan decreases as income increases. Notice, too, that those in the $10,000 bracket are borrowing almost 30% of their income on average.
-    </p>
-    <div id="percentage"></div>
     <h3>
         Number of Borrowers by Income
     </h3>
@@ -217,10 +210,20 @@
     </p>
     <div id="number-of-loans"></div>
     <h3>
+        Total Value of Loans
+    </h3>
+    <p>
+        Finally we want to know which income bracket has the most amount of total money in loans that has been granted through prosper loans. I summed all loan amounts by income bracket and charted it below. We see that $50,000-$70,000 income brackets have the highest total amount of money in loans granted.
+    </p>
+    <div id = "total-loan-amount"></div>
+    <p>
+        An interesting observation is that this graph and the numbers of loans bar chart are very similar except for in the $30,000-$50,000 range. Despite having significantly more loans than the $70,000-$100,000 range, the total loan amount for the former is very close to the latter (the total loan amounts for $40,000-$50,000 were actually slightly lower than the $80,000-$90,000 range). It is likely that, given that the average loan amount for $80,000-$90,000 is almost 50% higher than the average loan amount for those in the $40,000-$50,000 range, the higher number of loans are much lower in loan amount than are the loans granted for the $80,000-$90,000 range. However, note that the total loan amount for the $50,000-$70,000 range is still very high relative to other brackets. This mirrors the pattern we see in the number of loans. 
+    </p>
+    <h3>
         Conclusion
     </h3>
     <p>
-        People who take loans from Prosper Loans borrow higher amounts the higher their income is. However, as a total percentage of income, the loan as a portion of income decreases as income increases. People also seem to borrow in greater quantities in the income levels from $30,000-$70,000.
+        People who take loans from Prosper Loans borrow higher amounts the higher their income is. However, the greatest number of loans are granted to those making $30,000-$70,000. Between the higher average amount granted for those with higher incomes coupled with the higher amount of loans granted to those in lower incomes levels, the most money granted through prosper loans has been tied up in loans granted towards those making $50,000-$70,000.
     </p>
 </body>
 </html>
